@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Novena Fides et Ratio - Rumo a Notre Dame</title>
     
     <!-- Tailwind CSS -->
@@ -29,6 +29,10 @@
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
                         serif: ['Playfair Display', 'serif'],
+                    },
+                    // Utilitário para altura dinâmica em mobile
+                    height: {
+                        'screen-dvh': '100dvh', 
                     }
                 }
             }
@@ -64,21 +68,25 @@
             background-image: linear-gradient(to bottom right, #ffffff, #fdfdfd);
         }
 
-        /* Mobile Sidebar Transition */
         .sidebar-transition {
             transition: transform 0.3s ease-in-out;
         }
+        
+        /* Suporte para iPhone Notch/Home Bar */
+        .safe-pb {
+            padding-bottom: env(safe-area-inset-bottom, 20px);
+        }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800 h-screen flex overflow-hidden relative">
+<!-- Alterado h-screen para h-screen-dvh para corrigir o corte no mobile -->
+<body class="bg-gray-100 text-gray-800 h-screen-dvh flex overflow-hidden relative">
 
     <!-- Mobile Overlay (Backdrop) -->
-    <div id="mobile-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-20 hidden md:hidden transition-opacity opacity-0"></div>
+    <div id="mobile-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-20 hidden md:hidden transition-opacity opacity-0 backdrop-blur-sm"></div>
 
     <!-- Sidebar / Navigation -->
-    <!-- Alteração: Classes para comportamento off-canvas no mobile (absolute, -translate-x-full) e fixo no desktop (relative, translate-x-0) -->
-    <aside id="sidebar" class="sidebar-transition absolute inset-y-0 left-0 w-72 bg-ndBlue text-white flex flex-col shadow-2xl z-30 transform -translate-x-full md:relative md:translate-x-0">
-        <div class="p-6 border-b border-white/10 flex justify-between items-start">
+    <aside id="sidebar" class="sidebar-transition absolute inset-y-0 left-0 w-72 bg-ndBlue text-white flex flex-col shadow-2xl z-30 transform -translate-x-full md:relative md:translate-x-0 h-full">
+        <div class="p-6 border-b border-white/10 flex justify-between items-start flex-shrink-0">
             <div>
                 <div class="flex items-center gap-2 mb-2 text-ndGold">
                     <i data-lucide="graduation-cap" class="w-6 h-6"></i>
@@ -88,13 +96,13 @@
                 <p class="text-xs text-gray-400 mt-2">Preparação para Notre Dame</p>
             </div>
             <!-- Close Button (Mobile Only) -->
-            <button onclick="toggleSidebar()" class="md:hidden text-white hover:text-ndGold">
+            <button onclick="toggleSidebar()" class="md:hidden text-white hover:text-ndGold p-1">
                 <i data-lucide="x" class="w-6 h-6"></i>
             </button>
         </div>
 
         <!-- Progress Bar -->
-        <div class="px-6 py-4 bg-black/20">
+        <div class="px-6 py-4 bg-black/20 flex-shrink-0">
             <div class="flex justify-between text-xs mb-1">
                 <span class="text-gray-300">Progresso</span>
                 <span class="text-ndGold font-bold" id="progress-text">0%</span>
@@ -108,7 +116,7 @@
         <nav class="flex-1 overflow-y-auto py-4 px-2 space-y-1 custom-scrollbar">
             <!-- Intro Button -->
             <button onclick="loadDay(0)" id="nav-0" class="w-full text-left px-4 py-3 rounded-lg hover:bg-white/10 transition-colors flex items-center gap-3 group border-l-4 border-transparent">
-                <i data-lucide="book-open" class="w-5 h-5 text-ndGold group-hover:text-white transition-colors"></i>
+                <i data-lucide="book-open" class="w-5 h-5 text-ndGold group-hover:text-white transition-colors flex-shrink-0"></i>
                 <div>
                     <p class="text-sm font-semibold">Introdução</p>
                     <p class="text-xs text-gray-400">Oração Inicial & Intenção</p>
@@ -119,8 +127,8 @@
             <div id="days-container"></div>
         </nav>
         
-        <!-- Footer Sidebar -->
-        <div class="p-4 text-center text-xs text-gray-400 border-t border-white/10 bg-black/20">
+        <!-- Footer Sidebar (Fixado no fundo da sidebar, com suporte a safe area se necessário) -->
+        <div class="p-4 text-center text-xs text-gray-400 border-t border-white/10 bg-black/20 flex-shrink-0 safe-pb md:pb-4">
             <p>"Se o Senhor não construir a casa,<br>em vão trabalham os construtores."</p>
             <p class="mt-1 italic">- Salmo 127</p>
         </div>
@@ -128,28 +136,28 @@
 
     <!-- Main Content Area -->
     <main class="flex-1 flex flex-col h-full relative w-full bg-gray-50">
-        <!-- Mobile Header (Visible only on small screens) -->
+        <!-- Mobile Header -->
         <header class="md:hidden bg-ndBlue text-white p-4 flex justify-between items-center shadow-md shrink-0 z-10">
             <div class="flex items-center gap-3">
-                <button onclick="toggleSidebar()" class="text-white hover:text-ndGold">
+                <button onclick="toggleSidebar()" class="text-white hover:text-ndGold p-1 -ml-1">
                     <i data-lucide="menu" class="w-6 h-6"></i>
                 </button>
-                <span class="font-serif font-bold text-lg">Fides et Ratio</span>
+                <span class="font-serif font-bold text-lg truncate">Fides et Ratio</span>
             </div>
-            <span class="text-[10px] font-bold tracking-wider text-ndGold border border-ndGold px-2 py-1 rounded uppercase">Notre Dame</span>
+            <span class="text-[10px] font-bold tracking-wider text-ndGold border border-ndGold px-2 py-1 rounded uppercase flex-shrink-0">Notre Dame</span>
         </header>
 
         <!-- Scrollable Content -->
-        <div id="content-area" class="flex-1 overflow-y-auto p-4 md:p-12 scroll-smooth">
-            <div class="max-w-3xl mx-auto fade-in pb-20 md:pb-0">
+        <div id="content-area" class="flex-1 overflow-y-auto p-4 md:p-12 scroll-smooth w-full">
+            <div class="max-w-3xl mx-auto fade-in">
                 
                 <!-- Dynamic Content Injected Here -->
                 <div id="dynamic-content">
                     <!-- Content loads here -->
                 </div>
 
-                <!-- Footer Prayers (Always Visible at bottom of content) -->
-                <div class="mt-12 pt-8 border-t border-gray-200 mb-8">
+                <!-- Footer Prayers -->
+                <div class="mt-8 pt-8 border-t border-gray-200 mb-4">
                     <h3 class="font-serif text-xl text-ndBlue mb-4 flex items-center gap-2">
                         <i data-lucide="hands-praying" class="w-5 h-5"></i>
                         Orações Finais (Diárias)
@@ -167,39 +175,39 @@
                             <h4 class="font-bold text-ndBlue mb-2">Ladainha dos Patronos</h4>
                             <ul class="space-y-3 text-sm text-gray-700">
                                 <li class="flex items-center justify-between border-b border-gray-100 pb-1">
-                                    <span>Santo Isidoro de Sevilha <span class="text-xs text-gray-400 block md:inline">(Computação)</span></span>
-                                    <span class="font-semibold text-ndBlue text-xs md:text-sm whitespace-nowrap">Rogai por nós.</span>
+                                    <span>Santo Isidoro <span class="hidden sm:inline text-xs text-gray-400">(Computação)</span></span>
+                                    <span class="font-semibold text-ndBlue text-xs whitespace-nowrap">Rogai por nós.</span>
                                 </li>
                                 <li class="flex items-center justify-between border-b border-gray-100 pb-1">
-                                    <span>Santo Tomás de Aquino <span class="text-xs text-gray-400 block md:inline">(Estudos)</span></span>
-                                    <span class="font-semibold text-ndBlue text-xs md:text-sm whitespace-nowrap">Rogai por nós.</span>
+                                    <span>Santo Tomás <span class="hidden sm:inline text-xs text-gray-400">(Estudos)</span></span>
+                                    <span class="font-semibold text-ndBlue text-xs whitespace-nowrap">Rogai por nós.</span>
                                 </li>
-                                <!-- ATUALIZADO AQUI: Santo Carlo Acutis -->
                                 <li class="flex items-center justify-between border-b border-gray-100 pb-1">
-                                    <span>Santo Carlo Acutis <span class="text-xs text-gray-500 block md:inline">(Programador)</span></span>
-                                    <span class="font-semibold text-ndBlue text-xs md:text-sm whitespace-nowrap">Rogai por nós.</span>
+                                    <span class="font-semibold text-ndBlue">Santo Carlo Acutis</span>
+                                    <span class="font-semibold text-ndBlue text-xs whitespace-nowrap">Rogai por nós.</span>
                                 </li>
                                 <li class="flex items-center justify-between pt-1">
-                                    <span>Nossa Senhora de Notre Dame</span>
-                                    <span class="font-semibold text-ndBlue text-xs md:text-sm whitespace-nowrap">Rogai por nós.</span>
+                                    <span>Nossa Senhora</span>
+                                    <span class="font-semibold text-ndBlue text-xs whitespace-nowrap">Rogai por nós.</span>
                                 </li>
                             </ul>
                         </div>
                     </div>
                 </div>
                 
-                <div class="h-12 md:h-0"></div> <!-- Spacer for mobile fab/bottom bar clearance -->
+                <!-- Espaçador extra para garantir que o conteúdo final não fique escondido atrás da barra de ação -->
+                <div class="h-6 w-full"></div>
             </div>
         </div>
         
-        <!-- Complete Button (Sticky Bottom) -->
-        <div id="action-bar" class="bg-white border-t border-gray-200 p-4 md:px-12 flex justify-between items-center shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-20">
+        <!-- Complete Button Bar (Sticky Bottom com Safe Area) -->
+        <div id="action-bar" class="bg-white border-t border-gray-200 p-3 md:px-12 md:py-4 flex flex-col md:flex-row justify-between items-center shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-20 flex-shrink-0 safe-pb">
             <div class="text-xs text-gray-500 hidden md:block">
                 <span id="current-day-label" class="font-bold text-ndBlue">Introdução</span>
             </div>
-            <button id="btn-complete" onclick="toggleComplete()" class="w-full md:w-auto flex justify-center items-center gap-2 px-6 py-3 rounded-lg font-semibold shadow transition-all transform active:scale-95 bg-gray-200 text-gray-500 hover:bg-gray-300">
-                <i data-lucide="circle" class="w-5 h-5" id="icon-complete"></i>
-                <span id="text-complete">Marcar como Concluído</span>
+            <button id="btn-complete" onclick="toggleComplete()" class="w-full md:w-auto flex justify-center items-center gap-2 px-6 py-3.5 rounded-lg font-semibold shadow transition-all transform active:scale-[0.98] bg-gray-200 text-gray-500 hover:bg-gray-300 touch-manipulation">
+                <i data-lucide="circle" class="w-5 h-5 flex-shrink-0" id="icon-complete"></i>
+                <span id="text-complete" class="truncate">Marcar como Concluído</span>
             </button>
         </div>
     </main>
@@ -215,7 +223,7 @@
             if (isSidebarOpen) {
                 sidebar.classList.remove('-translate-x-full');
                 overlay.classList.remove('hidden', 'opacity-0');
-                overlay.classList.add('opacity-100'); // Fade in logic could be improved but simple works
+                overlay.classList.add('opacity-100');
             } else {
                 sidebar.classList.add('-translate-x-full');
                 overlay.classList.add('opacity-0', 'hidden');
@@ -235,12 +243,12 @@
                 subtitle: "O Início da Jornada",
                 icon: "info",
                 content: `
-                    <div class="bg-blue-50 border border-blue-100 p-6 rounded-xl mb-6">
+                    <div class="bg-blue-50 border border-blue-100 p-5 md:p-6 rounded-xl mb-6">
                         <h3 class="text-ndBlue font-serif font-bold text-lg mb-2">Bem-vindos, Futuros Doutores</h3>
-                        <p class="text-gray-700 mb-4 text-sm md:text-base">Planejar um PhD, especialmente em uma instituição de excelência e católica como a University of Notre Dame, exige não apenas capacidade intelectual, mas fortaleza espiritual. Esta ferramenta foi feita para vocês estruturarem essa jornada.</p>
-                        <p class="text-gray-700 text-sm md:text-base">Use este aplicativo web durante os próximos 9 dias. Marque cada dia como concluído para acompanhar seu progresso.</p>
+                        <p class="text-gray-700 mb-4 text-sm md:text-base leading-relaxed">Planejar um PhD, especialmente em uma instituição de excelência e católica como a University of Notre Dame, exige não apenas capacidade intelectual, mas fortaleza espiritual.</p>
+                        <p class="text-gray-700 text-sm md:text-base font-medium">Use este app para estruturar essa jornada de 9 dias.</p>
                     </div>
-                    <div class="prayer-card p-6 rounded-xl shadow-sm border border-gray-100">
+                    <div class="prayer-card p-5 md:p-6 rounded-xl shadow-sm border border-gray-100">
                         <h4 class="text-ndGold font-bold uppercase tracking-wide text-xs mb-2">Oração Diária</h4>
                         <p class="text-gray-800 font-serif text-base md:text-lg leading-relaxed">${commonPrayer.text}</p>
                     </div>
@@ -256,27 +264,27 @@
                         <div class="bg-ndBlue text-white p-4 rounded-t-xl">
                             <h3 class="font-serif font-bold text-lg md:text-xl">Oração Inicial</h3>
                         </div>
-                        <div class="bg-white p-6 rounded-b-xl shadow-sm border border-gray-200">
-                            <p class="text-gray-600 italic text-sm md:text-base">${commonPrayer.text}</p>
+                        <div class="bg-white p-5 md:p-6 rounded-b-xl shadow-sm border border-gray-200">
+                            <p class="text-gray-600 italic text-sm md:text-base leading-relaxed">${commonPrayer.text}</p>
                         </div>
                     </div>
 
-                    <div class="grid gap-6">
-                        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-ndGold">
+                    <div class="grid gap-4 md:gap-6">
+                        <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border-l-4 border-ndGold">
                             <h4 class="text-ndBlue font-bold mb-2 flex items-center gap-2"><i data-lucide="brain-circuit" class="w-4 h-4"></i> Reflexão</h4>
-                            <p class="text-gray-700">O estudo não é apenas para carreira, é para glorificar a Deus através da inteligência que Ele deu. É preciso discernir: É isso mesmo que Deus quer?</p>
+                            <p class="text-gray-700 text-sm md:text-base">O estudo não é apenas para carreira, é para glorificar a Deus através da inteligência que Ele deu. É preciso discernir: É isso mesmo que Deus quer?</p>
                         </div>
 
-                        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-ndBlue">
+                        <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border-l-4 border-ndBlue">
                             <h4 class="text-ndBlue font-bold mb-2 flex items-center gap-2"><i data-lucide="message-circle-heart" class="w-4 h-4"></i> Pedido</h4>
-                            <p class="font-serif text-lg text-gray-800">"Senhor, se for da Vossa vontade que eu e meu amigo vamos para Notre Dame, abri as portas. Se não for, dai-nos a paz para aceitar outros caminhos."</p>
+                            <p class="font-serif text-base md:text-lg text-gray-800 italic">"Senhor, se for da Vossa vontade que eu e meu amigo vamos para Notre Dame, abri as portas. Se não for, dai-nos a paz para aceitar outros caminhos."</p>
                         </div>
 
-                        <div class="bg-green-50 p-6 rounded-xl border border-green-100 flex items-start gap-3">
+                        <div class="bg-green-50 p-5 md:p-6 rounded-xl border border-green-100 flex items-start gap-3">
                             <i data-lucide="check-circle-2" class="w-6 h-6 text-green-600 mt-1 flex-shrink-0"></i>
                             <div>
-                                <h4 class="font-bold text-green-800">Ação Prática</h4>
-                                <p class="text-green-700 text-sm">Rezem um terço juntos (presencialmente ou online) nesta intenção hoje.</p>
+                                <h4 class="font-bold text-green-800 text-sm md:text-base">Ação Prática</h4>
+                                <p class="text-green-700 text-sm md:text-base">Rezem um terço juntos (presencialmente ou online) nesta intenção hoje.</p>
                             </div>
                         </div>
                     </div>
@@ -288,19 +296,21 @@
                 subtitle: "Dia 2: Comunicação",
                 icon: "languages",
                 content: `
-                    <div class="mb-6">
-                         <div class="bg-gray-100 p-4 rounded-lg mb-4 text-sm text-gray-600 italic">Reze a Oração Inicial (Veni Creator) antes de prosseguir.</div>
+                    <div class="mb-4 md:mb-6">
+                         <div class="bg-gray-200 p-3 rounded-lg text-xs md:text-sm text-gray-600 italic flex items-center gap-2">
+                            <i data-lucide="arrow-up" class="w-4 h-4"></i> Reze a Oração Inicial acima
+                         </div>
                     </div>
 
-                    <div class="grid gap-6">
-                        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-ndGold">
+                    <div class="grid gap-4 md:gap-6">
+                        <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border-l-4 border-ndGold">
                             <h4 class="text-ndBlue font-bold mb-2 flex items-center gap-2"><i data-lucide="brain-circuit" class="w-4 h-4"></i> Reflexão</h4>
-                            <p class="text-gray-700">No dia de Pentecostes, os apóstolos se fizeram entender por todos. A linguagem é uma ponte. Superar a barreira do idioma é um ato de humildade e esforço.</p>
+                            <p class="text-gray-700 text-sm md:text-base">No dia de Pentecostes, os apóstolos se fizeram entender por todos. A linguagem é uma ponte. Superar a barreira do idioma é um ato de humildade e esforço.</p>
                         </div>
 
-                        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-ndBlue">
+                        <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border-l-4 border-ndBlue">
                             <h4 class="text-ndBlue font-bold mb-2 flex items-center gap-2"><i data-lucide="message-circle-heart" class="w-4 h-4"></i> Pedido</h4>
-                            <p class="font-serif text-lg text-gray-800">"Senhor, clareai nossa mente para absorver a língua inglesa. Dai-nos disciplina para estudar o idioma todos os dias, não por vaidade, mas para sermos instrumentos de comunicação universal."</p>
+                            <p class="font-serif text-base md:text-lg text-gray-800 italic">"Senhor, clareai nossa mente para absorver a língua inglesa. Dai-nos disciplina para estudar o idioma todos os dias, não por vaidade, mas para sermos instrumentos de comunicação universal."</p>
                         </div>
                     </div>
                 `
@@ -311,19 +321,21 @@
                 subtitle: "Dia 3: Studiositas",
                 icon: "book-open-check",
                 content: `
-                     <div class="mb-6">
-                         <div class="bg-gray-100 p-4 rounded-lg mb-4 text-sm text-gray-600 italic">Reze a Oração Inicial (Veni Creator) antes de prosseguir.</div>
+                     <div class="mb-4 md:mb-6">
+                         <div class="bg-gray-200 p-3 rounded-lg text-xs md:text-sm text-gray-600 italic flex items-center gap-2">
+                            <i data-lucide="arrow-up" class="w-4 h-4"></i> Reze a Oração Inicial acima
+                         </div>
                     </div>
 
-                    <div class="grid gap-6">
-                        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-ndGold">
+                    <div class="grid gap-4 md:gap-6">
+                        <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border-l-4 border-ndGold">
                             <h4 class="text-ndBlue font-bold mb-2 flex items-center gap-2"><i data-lucide="brain-circuit" class="w-4 h-4"></i> Reflexão</h4>
-                            <p class="text-gray-700">Santo Tomás de Aquino dizia que o estudo requer <em>studiositas</em> (a virtude da aplicação) e não <em>curiositas</em> (curiosidade vã). As notas refletem essa constância.</p>
+                            <p class="text-gray-700 text-sm md:text-base">Santo Tomás de Aquino dizia que o estudo requer <em>studiositas</em> (a virtude da aplicação) e não <em>curiositas</em> (curiosidade vã). As notas refletem essa constância.</p>
                         </div>
 
-                        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-ndBlue">
+                        <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border-l-4 border-ndBlue">
                             <h4 class="text-ndBlue font-bold mb-2 flex items-center gap-2"><i data-lucide="message-circle-heart" class="w-4 h-4"></i> Pedido</h4>
-                            <p class="font-serif text-lg text-gray-800">"Senhor, afastai a preguiça e a procrastinação. Ajudai-nos a focar nas matérias difíceis e a buscar a excelência nas notas, oferecendo cada hora de estudo como sacrifício a Vós."</p>
+                            <p class="font-serif text-base md:text-lg text-gray-800 italic">"Senhor, afastai a preguiça e a procrastinação. Ajudai-nos a focar nas matérias difíceis e a buscar a excelência nas notas, oferecendo cada hora de estudo como sacrifício a Vós."</p>
                         </div>
                     </div>
                 `
@@ -334,22 +346,24 @@
                 subtitle: "Dia 4: Iniciação Científica",
                 icon: "microscope",
                 content: `
-                    <div class="mb-6">
-                         <div class="bg-gray-100 p-4 rounded-lg mb-4 text-sm text-gray-600 italic">Reze a Oração Inicial (Veni Creator) antes de prosseguir.</div>
+                    <div class="mb-4 md:mb-6">
+                         <div class="bg-gray-200 p-3 rounded-lg text-xs md:text-sm text-gray-600 italic flex items-center gap-2">
+                            <i data-lucide="arrow-up" class="w-4 h-4"></i> Reze a Oração Inicial acima
+                         </div>
                     </div>
 
-                    <div class="grid gap-6">
-                        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-ndGold">
+                    <div class="grid gap-4 md:gap-6">
+                        <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border-l-4 border-ndGold">
                             <h4 class="text-ndBlue font-bold mb-2 flex items-center gap-2"><i data-lucide="brain-circuit" class="w-4 h-4"></i> Reflexão</h4>
-                            <p class="text-gray-700">A Igreja ensina que a fé e a ciência são asas para a verdade. A pesquisa é uma forma de desvendar a criação de Deus.</p>
+                            <p class="text-gray-700 text-sm md:text-base">A Igreja ensina que a fé e a ciência são asas para a verdade. A pesquisa é uma forma de desvendar a criação de Deus.</p>
                         </div>
 
-                        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-ndBlue">
+                        <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border-l-4 border-ndBlue">
                             <h4 class="text-ndBlue font-bold mb-2 flex items-center gap-2"><i data-lucide="message-circle-heart" class="w-4 h-4"></i> Pedido</h4>
-                            <p class="font-serif text-lg text-gray-800">"Deus de Sabedoria, iluminai-nos para encontrar um bom tema de Iniciação Científica e um bom orientador. Que nossa pesquisa em computação contribua para o bem comum."</p>
+                            <p class="font-serif text-base md:text-lg text-gray-800 italic">"Deus de Sabedoria, iluminai-nos para encontrar um bom tema de Iniciação Científica e um bom orientador. Que nossa pesquisa em computação contribua para o bem comum."</p>
                         </div>
                         
-                        <div class="text-center text-ndBlue font-bold mt-4">
+                        <div class="text-center text-ndBlue font-bold mt-2">
                             Santo Isidoro de Sevilha, rogai por nós.
                         </div>
                     </div>
@@ -361,19 +375,21 @@
                 subtitle: "Dia 5: Parceria",
                 icon: "users",
                 content: `
-                    <div class="mb-6">
-                         <div class="bg-gray-100 p-4 rounded-lg mb-4 text-sm text-gray-600 italic">Reze a Oração Inicial (Veni Creator) antes de prosseguir.</div>
+                    <div class="mb-4 md:mb-6">
+                         <div class="bg-gray-200 p-3 rounded-lg text-xs md:text-sm text-gray-600 italic flex items-center gap-2">
+                            <i data-lucide="arrow-up" class="w-4 h-4"></i> Reze a Oração Inicial acima
+                         </div>
                     </div>
 
-                    <div class="grid gap-6">
-                        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-ndGold">
+                    <div class="grid gap-4 md:gap-6">
+                        <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border-l-4 border-ndGold">
                             <h4 class="text-ndBlue font-bold mb-2 flex items-center gap-2"><i data-lucide="brain-circuit" class="w-4 h-4"></i> Reflexão</h4>
-                            <p class="text-gray-700">"Quem encontra um amigo, encontra um tesouro" (Eclesiástico 6, 14). É difícil caminhar sozinho nesta jornada acadêmica.</p>
+                            <p class="text-gray-700 text-sm md:text-base">"Quem encontra um amigo, encontra um tesouro" (Eclesiástico 6, 14). É difícil caminhar sozinho nesta jornada acadêmica.</p>
                         </div>
 
-                        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-ndBlue">
+                        <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border-l-4 border-ndBlue">
                             <h4 class="text-ndBlue font-bold mb-2 flex items-center gap-2"><i data-lucide="message-circle-heart" class="w-4 h-4"></i> Pedido</h4>
-                            <p class="font-serif text-lg text-gray-800">"Senhor, abençoai nossa amizade. Que um ajude o outro a estudar, a não desanimar e a crescer na fé. Livrai-nos da competição invejosa e dai-nos o espírito de cooperação."</p>
+                            <p class="font-serif text-base md:text-lg text-gray-800 italic">"Senhor, abençoai nossa amizade. Que um ajude o outro a estudar, a não desanimar e a crescer na fé. Livrai-nos da competição invejosa e dai-nos o espírito de cooperação."</p>
                         </div>
                     </div>
                 `
@@ -384,19 +400,21 @@
                 subtitle: "Dia 6: Providência",
                 icon: "file-text",
                 content: `
-                    <div class="mb-6">
-                         <div class="bg-gray-100 p-4 rounded-lg mb-4 text-sm text-gray-600 italic">Reze a Oração Inicial (Veni Creator) antes de prosseguir.</div>
+                    <div class="mb-4 md:mb-6">
+                         <div class="bg-gray-200 p-3 rounded-lg text-xs md:text-sm text-gray-600 italic flex items-center gap-2">
+                            <i data-lucide="arrow-up" class="w-4 h-4"></i> Reze a Oração Inicial acima
+                         </div>
                     </div>
 
-                    <div class="grid gap-6">
-                        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-ndGold">
+                    <div class="grid gap-4 md:gap-6">
+                        <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border-l-4 border-ndGold">
                             <h4 class="text-ndBlue font-bold mb-2 flex items-center gap-2"><i data-lucide="brain-circuit" class="w-4 h-4"></i> Reflexão</h4>
-                            <p class="text-gray-700">Cartas, vistos, finanças. A Providência Divina cuida dos lírios do campo, cuidará também dos documentos e das taxas de aplicação.</p>
+                            <p class="text-gray-700 text-sm md:text-base">Cartas, vistos, finanças. A Providência Divina cuida dos lírios do campo, cuidará também dos documentos e das taxas de aplicação.</p>
                         </div>
 
-                        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-ndBlue">
+                        <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border-l-4 border-ndBlue">
                             <h4 class="text-ndBlue font-bold mb-2 flex items-center gap-2"><i data-lucide="message-circle-heart" class="w-4 h-4"></i> Pedido</h4>
-                            <p class="font-serif text-lg text-gray-800">"Mãe da Divina Providência, preparai o caminho burocrático. Inspirai nossos professores para que escrevam boas cartas de recomendação e providenciai os meios financeiros necessários para este sonho."</p>
+                            <p class="font-serif text-base md:text-lg text-gray-800 italic">"Mãe da Divina Providência, preparai o caminho burocrático. Inspirai nossos professores para que escrevam boas cartas de recomendação e providenciai os meios financeiros necessários para este sonho."</p>
                         </div>
                     </div>
                 `
@@ -407,19 +425,21 @@
                 subtitle: "Dia 7: Servir",
                 icon: "heart-handshake",
                 content: `
-                    <div class="mb-6">
-                         <div class="bg-gray-100 p-4 rounded-lg mb-4 text-sm text-gray-600 italic">Reze a Oração Inicial (Veni Creator) antes de prosseguir.</div>
+                    <div class="mb-4 md:mb-6">
+                         <div class="bg-gray-200 p-3 rounded-lg text-xs md:text-sm text-gray-600 italic flex items-center gap-2">
+                            <i data-lucide="arrow-up" class="w-4 h-4"></i> Reze a Oração Inicial acima
+                         </div>
                     </div>
 
-                    <div class="grid gap-6">
-                        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-ndGold">
+                    <div class="grid gap-4 md:gap-6">
+                        <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border-l-4 border-ndGold">
                             <h4 class="text-ndBlue font-bold mb-2 flex items-center gap-2"><i data-lucide="brain-circuit" class="w-4 h-4"></i> Reflexão</h4>
-                            <p class="text-gray-700">O Catecismo nos lembra que os talentos não são nossos, são emprestados por Deus (Parábola dos Talentos). Estudamos para servir.</p>
+                            <p class="text-gray-700 text-sm md:text-base">O Catecismo nos lembra que os talentos não são nossos, são emprestados por Deus (Parábola dos Talentos). Estudamos para servir.</p>
                         </div>
 
-                        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-ndBlue">
+                        <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border-l-4 border-ndBlue">
                             <h4 class="text-ndBlue font-bold mb-2 flex items-center gap-2"><i data-lucide="message-circle-heart" class="w-4 h-4"></i> Pedido</h4>
-                            <p class="font-serif text-lg text-gray-800">"Jesus, manso e humilde de coração, fazei o nosso coração semelhante ao Vosso. Que o título de PhD não nos torne soberbos, mas servidores da verdade."</p>
+                            <p class="font-serif text-base md:text-lg text-gray-800 italic">"Jesus, manso e humilde de coração, fazei o nosso coração semelhante ao Vosso. Que o título de PhD não nos torne soberbos, mas servidores da verdade."</p>
                         </div>
                     </div>
                 `
@@ -430,19 +450,21 @@
                 subtitle: "Dia 8: Perseverança",
                 icon: "shield-check",
                 content: `
-                    <div class="mb-6">
-                         <div class="bg-gray-100 p-4 rounded-lg mb-4 text-sm text-gray-600 italic">Reze a Oração Inicial (Veni Creator) antes de prosseguir.</div>
+                    <div class="mb-4 md:mb-6">
+                         <div class="bg-gray-200 p-3 rounded-lg text-xs md:text-sm text-gray-600 italic flex items-center gap-2">
+                            <i data-lucide="arrow-up" class="w-4 h-4"></i> Reze a Oração Inicial acima
+                         </div>
                     </div>
 
-                    <div class="grid gap-6">
-                        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-ndGold">
+                    <div class="grid gap-4 md:gap-6">
+                        <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border-l-4 border-ndGold">
                             <h4 class="text-ndBlue font-bold mb-2 flex items-center gap-2"><i data-lucide="brain-circuit" class="w-4 h-4"></i> Reflexão</h4>
-                            <p class="text-gray-700">O processo é longo e cansativo. Santa Teresa D'Ávila dizia: "A paciência tudo alcança".</p>
+                            <p class="text-gray-700 text-sm md:text-base">O processo é longo e cansativo. Santa Teresa D'Ávila dizia: "A paciência tudo alcança".</p>
                         </div>
 
-                        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-ndBlue">
+                        <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border-l-4 border-ndBlue">
                             <h4 class="text-ndBlue font-bold mb-2 flex items-center gap-2"><i data-lucide="message-circle-heart" class="w-4 h-4"></i> Pedido</h4>
-                            <p class="font-serif text-lg text-gray-800">"Senhor, quando vier o cansaço, a reprovação em um paper ou a dificuldade no código, dai-nos a graça de levantar e tentar de novo."</p>
+                            <p class="font-serif text-base md:text-lg text-gray-800 italic">"Senhor, quando vier o cansaço, a reprovação em um paper ou a dificuldade no código, dai-nos a graça de levantar e tentar de novo."</p>
                         </div>
                     </div>
                 `
@@ -453,19 +475,21 @@
                 subtitle: "Dia 9: Consagração",
                 icon: "church",
                 content: `
-                    <div class="mb-6">
-                         <div class="bg-gray-100 p-4 rounded-lg mb-4 text-sm text-gray-600 italic">Reze a Oração Inicial (Veni Creator) antes de prosseguir.</div>
+                    <div class="mb-4 md:mb-6">
+                         <div class="bg-gray-200 p-3 rounded-lg text-xs md:text-sm text-gray-600 italic flex items-center gap-2">
+                            <i data-lucide="arrow-up" class="w-4 h-4"></i> Reze a Oração Inicial acima
+                         </div>
                     </div>
 
-                    <div class="grid gap-6">
-                        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-ndGold">
+                    <div class="grid gap-4 md:gap-6">
+                        <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border-l-4 border-ndGold">
                             <h4 class="text-ndBlue font-bold mb-2 flex items-center gap-2"><i data-lucide="brain-circuit" class="w-4 h-4"></i> Reflexão</h4>
-                            <p class="text-gray-700">A universidade para onde vocês querem ir leva o nome Dela. É a hora da entrega total.</p>
+                            <p class="text-gray-700 text-sm md:text-base">A universidade para onde vocês querem ir leva o nome Dela. É a hora da entrega total.</p>
                         </div>
 
-                        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-ndBlue">
+                        <div class="bg-white p-5 md:p-6 rounded-xl shadow-sm border-l-4 border-ndBlue">
                             <h4 class="text-ndBlue font-bold mb-2 flex items-center gap-2"><i data-lucide="message-circle-heart" class="w-4 h-4"></i> Pedido</h4>
-                            <p class="font-serif text-lg text-gray-800">"Ó Maria, Nossa Senhora (Notre Dame), colocamos essa aplicação em vosso colo. Levai este desejo ao Vosso Filho Jesus. Nós confiaremos no resultado, seja ele qual for."</p>
+                            <p class="font-serif text-base md:text-lg text-gray-800 italic">"Ó Maria, Nossa Senhora (Notre Dame), colocamos essa aplicação em vosso colo. Levai este desejo ao Vosso Filho Jesus. Nós confiaremos no resultado, seja ele qual for."</p>
                         </div>
                     </div>
                 `
@@ -504,7 +528,7 @@
                 const isActive = currentDay === index;
                 
                 const btn = document.createElement('button');
-                btn.className = `w-full text-left px-4 py-3 rounded-lg transition-all flex items-center gap-3 border-l-4 mb-1
+                btn.className = `w-full text-left px-4 py-3 rounded-lg transition-all flex items-center gap-3 border-l-4 mb-1 flex-shrink-0
                     ${isActive ? 'bg-white/10 border-ndGold' : 'border-transparent hover:bg-white/5'}
                 `;
                 btn.onclick = () => {
@@ -519,9 +543,9 @@
                         <i data-lucide="${item.icon}" class="w-5 h-5 ${isCompleted ? 'text-green-400' : (isActive ? 'text-ndGold' : 'text-gray-400')}"></i>
                         ${isCompleted ? '<div class="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full"></div>' : ''}
                     </div>
-                    <div class="min-w-0">
+                    <div class="min-w-0 flex-1">
                         <p class="text-sm font-semibold ${isActive ? 'text-white' : 'text-gray-300'}">Dia ${item.day}</p>
-                        <p class="text-xs text-gray-500 truncate w-32 md:w-auto">${item.title}</p>
+                        <p class="text-xs text-gray-500 truncate">${item.title}</p>
                     </div>
                 `;
                 daysContainer.appendChild(btn);
@@ -586,12 +610,15 @@
         function updateButtonState() {
             const isCompleted = completedDays.includes(currentDay);
             
+            // Ajuste de classes para responsividade do botão
+            const baseClasses = "w-full md:w-auto flex justify-center items-center gap-2 px-6 py-3.5 rounded-lg font-semibold shadow transition-all transform active:scale-[0.98] touch-manipulation";
+            
             if (isCompleted) {
-                btnComplete.className = "w-full md:w-auto flex justify-center items-center gap-2 px-6 py-3 rounded-lg font-semibold shadow transition-all transform active:scale-95 bg-green-600 text-white hover:bg-green-700";
+                btnComplete.className = `${baseClasses} bg-green-600 text-white hover:bg-green-700`;
                 textComplete.innerText = "Concluído";
                 iconComplete.setAttribute('data-lucide', 'check-circle');
             } else {
-                btnComplete.className = "w-full md:w-auto flex justify-center items-center gap-2 px-6 py-3 rounded-lg font-semibold shadow transition-all transform active:scale-95 bg-ndBlue text-white hover:bg-gray-800";
+                btnComplete.className = `${baseClasses} bg-ndBlue text-white hover:bg-gray-800`;
                 textComplete.innerText = "Marcar como Concluído";
                 iconComplete.setAttribute('data-lucide', 'circle');
             }
